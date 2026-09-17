@@ -1,0 +1,49 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: sistema-principal-veiculos
+  labels:
+    app: sistema-principal-veiculos
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: sistema-principal-veiculos
+  template:
+    metadata:
+      labels:
+        app: sistema-principal-veiculos
+    spec:
+      containers:
+        - name: sistema-principal-veiculos
+          image: sistema-principal-veiculos:latest
+          imagePullPolicy: IfNotPresent
+          ports:
+            - containerPort: 8081
+              name: http
+          envFrom:
+            - configMapRef:
+                name: sistema-principal-veiculos-config
+            - secretRef:
+                name: sistema-principal-veiculos-secret
+          readinessProbe:
+            httpGet:
+              path: /actuator/health
+              port: 8081
+            initialDelaySeconds: 15
+            periodSeconds: 10
+            timeoutSeconds: 5
+          livenessProbe:
+            httpGet:
+              path: /actuator/health
+              port: 8081
+            initialDelaySeconds: 30
+            periodSeconds: 15
+            timeoutSeconds: 5
+          resources:
+            requests:
+              cpu: 100m
+              memory: 256Mi
+            limits:
+              cpu: 500m
+              memory: 512Mi

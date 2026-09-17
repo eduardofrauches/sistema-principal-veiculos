@@ -1,0 +1,9 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: sistema-principal-veiculos-config
+  labels:
+    app: sistema-principal-veiculos
+data:
+  # URL do servico-vendas-veiculos dentro do cluster (nome do Service).
+  SERVICO_VENDAS_BASE_URL: http://servico-vendas-veiculos:8082
