@@ -53,6 +53,28 @@ A aplicacao sobe na porta `8081` e conecta no PostgreSQL do container
 `application.yml`). O schema e criado automaticamente
 (`ddl-auto: update`) — ainda nao ha migrations (Flyway/Liquibase).
 
+## Kubernetes
+
+Manifests Kustomize em `k8s/` (`base/` + `overlays/local/`, para uso
+com Minikube). **Importante:** o banco de dados (`postgres-core`) **nao
+esta neste repositorio** — ele vive em um repositorio separado,
+[infra-databases-revenda-veiculos](https://github.com/eduardofrauches/infra-databases-revenda-veiculos),
+porque a infraestrutura de banco e compartilhada e nao pertence a
+nenhum dos dois microsservicos individualmente. **Aplique os
+manifests desse repositorio antes de subir este servico no cluster**
+— sem o banco no ar, os pods deste Deployment nunca ficam `Ready`
+(falham a `readinessProbe`/`livenessProbe` em `/actuator/health`).
+
+```bash
+# 1. Bancos (repositorio infra-databases-revenda-veiculos)
+kubectl apply -k .
+kubectl rollout status statefulset/postgres-core --timeout=120s
+
+# 2. Este servico (a partir deste repositorio)
+minikube image load sistema-principal-veiculos:local
+kubectl apply -k k8s/overlays/local
+```
+
 ## Testado manualmente
 
 Fluxo ponta a ponta validado com `curl` junto com o
@@ -85,13 +107,13 @@ fluxo completo entre os dois servicos).
 
 ## Em construcao
 
-Este projeto ja sobe de verdade, tem o fluxo principal funcionando e
-testes unitarios + de integracao. Ainda faltam, para as proximas
-etapas:
+Este projeto ja sobe de verdade, tem o fluxo principal funcionando,
+testes unitarios + de integracao, Dockerfile, pipeline de CI/CD e
+manifests Kubernetes. Ainda faltam, para as proximas etapas:
 
 - [ ] Teste BDD (Cucumber) tambem aqui, ou MockMvc para o `VeiculoController` (hoje sem cobertura direta).
 - [ ] Migrations versionadas (Flyway/Liquibase) em vez de `ddl-auto: update`.
-- [ ] Dockerfile da aplicacao (o `docker-compose.yml` atual sobe so os bancos).
-- [ ] Pipeline CI/CD.
-- [ ] Manifests Kubernetes (Kustomize).
+- [ ] Push da imagem Docker para um registry (Docker Hub/GHCR) — hoje o estagio `docker` do CI so builda localmente.
+- [ ] Overlay Kubernetes para nuvem (`k8s/overlays/aws` ou equivalente) — hoje so existe `overlays/local`.
+- [ ] Gerenciamento de segredos de verdade (Sealed Secrets, Vault, External Secrets) no lugar do `Secret` placeholder.
 - [ ] Resiliencia mais robusta na chamada HTTP ao servico-vendas (retry/circuit breaker) — hoje uma falha so gera um log de warning.
