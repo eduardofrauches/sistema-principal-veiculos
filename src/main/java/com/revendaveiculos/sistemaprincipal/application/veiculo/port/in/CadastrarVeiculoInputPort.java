@@ -1,9 +1,9 @@
 package com.revendaveiculos.sistemaprincipal.application.veiculo.port.in;
 
 import com.revendaveiculos.sistemaprincipal.application.veiculo.dto.request.CadastrarVeiculoRequest;
-import com.revendaveiculos.sistemaprincipal.application.veiculo.dto.response.VeiculoResponse;
+import com.revendaveiculos.sistemaprincipal.domain.model.veiculo.Veiculo;
 
 public interface CadastrarVeiculoInputPort {
 
-    VeiculoResponse cadastrar(CadastrarVeiculoRequest request);
+    Veiculo cadastrar(CadastrarVeiculoRequest request);
 }

@@ -1,9 +1,9 @@
 package com.revendaveiculos.sistemaprincipal.application.veiculo.port.in;
 
 import com.revendaveiculos.sistemaprincipal.application.veiculo.dto.request.EditarVeiculoRequest;
-import com.revendaveiculos.sistemaprincipal.application.veiculo.dto.response.VeiculoResponse;
+import com.revendaveiculos.sistemaprincipal.domain.model.veiculo.Veiculo;
 
 public interface EditarVeiculoInputPort {
 
-    VeiculoResponse editar(Long id, EditarVeiculoRequest request);
+    Veiculo editar(Long id, EditarVeiculoRequest request);
 }

@@ -1,8 +1,6 @@
 package com.revendaveiculos.sistemaprincipal.application.veiculo.usecase;
 
 import com.revendaveiculos.sistemaprincipal.application.veiculo.dto.request.EditarVeiculoRequest;
-import com.revendaveiculos.sistemaprincipal.application.veiculo.dto.response.VeiculoResponse;
-import com.revendaveiculos.sistemaprincipal.application.veiculo.mapper.VeiculoMapper;
 import com.revendaveiculos.sistemaprincipal.application.veiculo.port.in.EditarVeiculoInputPort;
 import com.revendaveiculos.sistemaprincipal.application.veiculo.port.out.VeiculoRepositoryPort;
 import com.revendaveiculos.sistemaprincipal.application.veiculo.port.out.VendasServicePort;
@@ -16,18 +14,15 @@ public class EditarVeiculoUseCase implements EditarVeiculoInputPort {
 
     private final VeiculoRepositoryPort veiculoRepositoryPort;
     private final VendasServicePort vendasServicePort;
-    private final VeiculoMapper veiculoMapper;
 
     public EditarVeiculoUseCase(VeiculoRepositoryPort veiculoRepositoryPort,
-                                 VendasServicePort vendasServicePort,
-                                 VeiculoMapper veiculoMapper) {
+                                 VendasServicePort vendasServicePort) {
         this.veiculoRepositoryPort = veiculoRepositoryPort;
         this.vendasServicePort = vendasServicePort;
-        this.veiculoMapper = veiculoMapper;
     }
 
     @Override
-    public VeiculoResponse editar(Long id, EditarVeiculoRequest request) {
+    public Veiculo editar(Long id, EditarVeiculoRequest request) {
         Veiculo veiculo = veiculoRepositoryPort.buscarPorId(id)
                 .orElseThrow(() -> new VeiculoNaoEncontradoException(id));
 
@@ -42,6 +37,6 @@ public class EditarVeiculoUseCase implements EditarVeiculoInputPort {
 
         Veiculo veiculoAtualizado = veiculoRepositoryPort.salvar(veiculo);
         vendasServicePort.sincronizarVeiculo(veiculoAtualizado);
-        return veiculoMapper.paraResponse(veiculoAtualizado);
+        return veiculoAtualizado;
     }
 }

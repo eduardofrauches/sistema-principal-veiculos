@@ -1,8 +1,6 @@
 package com.revendaveiculos.sistemaprincipal.application.veiculo.usecase;
 
 import com.revendaveiculos.sistemaprincipal.application.veiculo.dto.request.AtualizarStatusVeiculoRequest;
-import com.revendaveiculos.sistemaprincipal.application.veiculo.dto.response.VeiculoResponse;
-import com.revendaveiculos.sistemaprincipal.application.veiculo.mapper.VeiculoMapper;
 import com.revendaveiculos.sistemaprincipal.application.veiculo.port.in.AtualizarStatusVeiculoInputPort;
 import com.revendaveiculos.sistemaprincipal.application.veiculo.port.out.VeiculoRepositoryPort;
 import com.revendaveiculos.sistemaprincipal.domain.exception.VeiculoNaoEncontradoException;
@@ -18,22 +16,18 @@ import org.springframework.stereotype.Service;
 public class AtualizarStatusVeiculoUseCase implements AtualizarStatusVeiculoInputPort {
 
     private final VeiculoRepositoryPort veiculoRepositoryPort;
-    private final VeiculoMapper veiculoMapper;
 
-    public AtualizarStatusVeiculoUseCase(VeiculoRepositoryPort veiculoRepositoryPort,
-                                          VeiculoMapper veiculoMapper) {
+    public AtualizarStatusVeiculoUseCase(VeiculoRepositoryPort veiculoRepositoryPort) {
         this.veiculoRepositoryPort = veiculoRepositoryPort;
-        this.veiculoMapper = veiculoMapper;
     }
 
     @Override
-    public VeiculoResponse atualizarStatus(Long id, AtualizarStatusVeiculoRequest request) {
+    public Veiculo atualizarStatus(Long id, AtualizarStatusVeiculoRequest request) {
         Veiculo veiculo = veiculoRepositoryPort.buscarPorId(id)
                 .orElseThrow(() -> new VeiculoNaoEncontradoException(id));
 
         veiculo.atualizarStatus(request.status());
 
-        Veiculo veiculoAtualizado = veiculoRepositoryPort.salvar(veiculo);
-        return veiculoMapper.paraResponse(veiculoAtualizado);
+        return veiculoRepositoryPort.salvar(veiculo);
     }
 }

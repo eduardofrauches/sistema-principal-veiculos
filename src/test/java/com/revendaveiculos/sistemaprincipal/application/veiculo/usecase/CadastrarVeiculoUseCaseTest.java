@@ -1,7 +1,6 @@
 package com.revendaveiculos.sistemaprincipal.application.veiculo.usecase;
 
 import com.revendaveiculos.sistemaprincipal.application.veiculo.dto.request.CadastrarVeiculoRequest;
-import com.revendaveiculos.sistemaprincipal.application.veiculo.dto.response.VeiculoResponse;
 import com.revendaveiculos.sistemaprincipal.application.veiculo.mapper.VeiculoMapper;
 import com.revendaveiculos.sistemaprincipal.application.veiculo.port.out.VeiculoRepositoryPort;
 import com.revendaveiculos.sistemaprincipal.application.veiculo.port.out.VendasServicePort;
@@ -48,10 +47,10 @@ class CadastrarVeiculoUseCaseTest {
                 "ABC1D23", StatusVeiculo.DISPONIVEL);
         when(veiculoRepositoryPort.salvar(any(Veiculo.class))).thenReturn(veiculoSalvo);
 
-        VeiculoResponse response = useCase.cadastrar(requestValido());
+        Veiculo response = useCase.cadastrar(requestValido());
 
-        assertThat(response.id()).isEqualTo(1L);
-        assertThat(response.status()).isEqualTo("DISPONIVEL");
+        assertThat(response.getId()).isEqualTo(1L);
+        assertThat(response.getStatus()).isEqualTo(StatusVeiculo.DISPONIVEL);
 
         ArgumentCaptor<Veiculo> captor = ArgumentCaptor.forClass(Veiculo.class);
         verify(veiculoRepositoryPort).salvar(captor.capture());

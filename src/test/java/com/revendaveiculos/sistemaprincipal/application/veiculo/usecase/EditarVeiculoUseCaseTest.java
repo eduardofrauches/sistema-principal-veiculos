@@ -1,8 +1,6 @@
 package com.revendaveiculos.sistemaprincipal.application.veiculo.usecase;
 
 import com.revendaveiculos.sistemaprincipal.application.veiculo.dto.request.EditarVeiculoRequest;
-import com.revendaveiculos.sistemaprincipal.application.veiculo.dto.response.VeiculoResponse;
-import com.revendaveiculos.sistemaprincipal.application.veiculo.mapper.VeiculoMapper;
 import com.revendaveiculos.sistemaprincipal.application.veiculo.port.out.VeiculoRepositoryPort;
 import com.revendaveiculos.sistemaprincipal.application.veiculo.port.out.VendasServicePort;
 import com.revendaveiculos.sistemaprincipal.domain.exception.TransicaoStatusInvalidaException;
@@ -32,8 +30,6 @@ class EditarVeiculoUseCaseTest {
     @Mock
     private VendasServicePort vendasServicePort;
 
-    private final VeiculoMapper veiculoMapper = new VeiculoMapper();
-
     private EditarVeiculoUseCase useCase;
 
     private EditarVeiculoRequest requestValido() {
@@ -48,23 +44,23 @@ class EditarVeiculoUseCaseTest {
 
     @Test
     void deveEditarVeiculoDisponivelESincronizar() {
-        useCase = new EditarVeiculoUseCase(veiculoRepositoryPort, vendasServicePort, veiculoMapper);
+        useCase = new EditarVeiculoUseCase(veiculoRepositoryPort, vendasServicePort);
 
         Veiculo existente = veiculoExistente(StatusVeiculo.DISPONIVEL);
         when(veiculoRepositoryPort.buscarPorId(1L)).thenReturn(Optional.of(existente));
         when(veiculoRepositoryPort.salvar(any(Veiculo.class))).thenReturn(existente);
 
-        VeiculoResponse response = useCase.editar(1L, requestValido());
+        Veiculo response = useCase.editar(1L, requestValido());
 
-        assertThat(response.marca()).isEqualTo("Toyota");
-        assertThat(response.cor()).isEqualTo("Preto");
+        assertThat(response.getMarca()).isEqualTo("Toyota");
+        assertThat(response.getCor()).isEqualTo("Preto");
         verify(veiculoRepositoryPort).salvar(existente);
         verify(vendasServicePort).sincronizarVeiculo(existente);
     }
 
     @Test
     void deveLancarExcecaoQuandoVeiculoNaoEncontrado() {
-        useCase = new EditarVeiculoUseCase(veiculoRepositoryPort, vendasServicePort, veiculoMapper);
+        useCase = new EditarVeiculoUseCase(veiculoRepositoryPort, vendasServicePort);
 
         when(veiculoRepositoryPort.buscarPorId(99L)).thenReturn(Optional.empty());
 
@@ -77,7 +73,7 @@ class EditarVeiculoUseCaseTest {
 
     @Test
     void deveLancarExcecaoAoEditarVeiculoJaVendido() {
-        useCase = new EditarVeiculoUseCase(veiculoRepositoryPort, vendasServicePort, veiculoMapper);
+        useCase = new EditarVeiculoUseCase(veiculoRepositoryPort, vendasServicePort);
 
         Veiculo vendido = veiculoExistente(StatusVeiculo.VENDIDO);
         when(veiculoRepositoryPort.buscarPorId(1L)).thenReturn(Optional.of(vendido));

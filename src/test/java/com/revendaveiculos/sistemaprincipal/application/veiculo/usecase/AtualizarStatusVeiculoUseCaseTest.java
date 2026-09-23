@@ -1,8 +1,6 @@
 package com.revendaveiculos.sistemaprincipal.application.veiculo.usecase;
 
 import com.revendaveiculos.sistemaprincipal.application.veiculo.dto.request.AtualizarStatusVeiculoRequest;
-import com.revendaveiculos.sistemaprincipal.application.veiculo.dto.response.VeiculoResponse;
-import com.revendaveiculos.sistemaprincipal.application.veiculo.mapper.VeiculoMapper;
 import com.revendaveiculos.sistemaprincipal.application.veiculo.port.out.VeiculoRepositoryPort;
 import com.revendaveiculos.sistemaprincipal.domain.exception.TransicaoStatusInvalidaException;
 import com.revendaveiculos.sistemaprincipal.domain.exception.VeiculoNaoEncontradoException;
@@ -28,8 +26,6 @@ class AtualizarStatusVeiculoUseCaseTest {
     @Mock
     private VeiculoRepositoryPort veiculoRepositoryPort;
 
-    private final VeiculoMapper veiculoMapper = new VeiculoMapper();
-
     private AtualizarStatusVeiculoUseCase useCase;
 
     private Veiculo veiculo(StatusVeiculo status) {
@@ -39,22 +35,22 @@ class AtualizarStatusVeiculoUseCaseTest {
 
     @Test
     void deveAtualizarStatusQuandoTransicaoValida() {
-        useCase = new AtualizarStatusVeiculoUseCase(veiculoRepositoryPort, veiculoMapper);
+        useCase = new AtualizarStatusVeiculoUseCase(veiculoRepositoryPort);
 
         Veiculo veiculo = veiculo(StatusVeiculo.DISPONIVEL);
         when(veiculoRepositoryPort.buscarPorId(1L)).thenReturn(Optional.of(veiculo));
         when(veiculoRepositoryPort.salvar(veiculo)).thenReturn(veiculo);
 
-        VeiculoResponse response = useCase.atualizarStatus(1L,
+        Veiculo response = useCase.atualizarStatus(1L,
                 new AtualizarStatusVeiculoRequest(StatusVeiculo.RESERVADO));
 
-        assertThat(response.status()).isEqualTo("RESERVADO");
+        assertThat(response.getStatus()).isEqualTo(StatusVeiculo.RESERVADO);
         verify(veiculoRepositoryPort).salvar(veiculo);
     }
 
     @Test
     void deveLancarExcecaoQuandoVeiculoNaoEncontrado() {
-        useCase = new AtualizarStatusVeiculoUseCase(veiculoRepositoryPort, veiculoMapper);
+        useCase = new AtualizarStatusVeiculoUseCase(veiculoRepositoryPort);
 
         when(veiculoRepositoryPort.buscarPorId(99L)).thenReturn(Optional.empty());
 
@@ -67,7 +63,7 @@ class AtualizarStatusVeiculoUseCaseTest {
 
     @Test
     void deveLancarExcecaoQuandoTransicaoInvalida() {
-        useCase = new AtualizarStatusVeiculoUseCase(veiculoRepositoryPort, veiculoMapper);
+        useCase = new AtualizarStatusVeiculoUseCase(veiculoRepositoryPort);
 
         Veiculo vendido = veiculo(StatusVeiculo.VENDIDO);
         when(veiculoRepositoryPort.buscarPorId(1L)).thenReturn(Optional.of(vendido));

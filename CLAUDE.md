@@ -28,7 +28,8 @@ docker compose up -d      # na raiz do repo: sobe o Postgres deste servico e o d
 src/main/java/com/revendaveiculos/sistemaprincipal/
 ├── adapter/
 │   ├── in/
-│   │   ├── controller/veiculo/VeiculoController    <- REST controller, depende so de application/port/in
+│   │   ├── controller/veiculo/VeiculoController    <- REST controller, depende so de application/port/in e do Presenter
+│   │   ├── presenter/veiculo/VeiculoPresenter       <- formata a Entity de dominio devolvida pelo UseCase em VeiculoResponse
 │   │   └── exception/GlobalExceptionHandler         <- @RestControllerAdvice, traduz exceptions -> HTTP
 │   └── out/veiculo/
 │       ├── persistence/jpa/{entity,mapper,repository}/   <- VeiculoEntity, VeiculoEntityMapper, VeiculoJpaRepository + VeiculoRepositoryAdapter (implementa VeiculoRepositoryPort)
@@ -57,6 +58,25 @@ src/main/java/com/revendaveiculos/sistemaprincipal/
    Fase 4 anterior. Controllers dependem so de `port/in`; UseCases
    implementam `port/in` e dependem de `port/out`; adapters de
    persistencia/HTTP implementam `port/out`.
+1a. **Presenter dedicado** (`adapter/in/presenter/veiculo/VeiculoPresenter`),
+   adicionado apos auditoria de Clean Architecture que apontou a
+   ausencia dessa camada como lacuna de um feedback de trabalho
+   anterior do curso. Os `port/in` (`CadastrarVeiculoInputPort`,
+   `EditarVeiculoInputPort`, `AtualizarStatusVeiculoInputPort`) agora
+   devolvem a Entity de dominio `Veiculo`, nao mais `VeiculoResponse`;
+   os UseCases nao conhecem o formato de resposta HTTP. O Controller e
+   quem chama `VeiculoPresenter.apresentar(veiculo)` para obter o DTO,
+   so entao montando o `ResponseEntity`. Local escolhido:
+   `adapter/in/presenter/` (mesmo nivel de `adapter/in/controller/`) —
+   e a mesma camada de "Interface Adapters" do Clean Architecture, so
+   que responsavel por formatar a saida em vez de receber a entrada.
+   `VeiculoMapper` (`application/veiculo/mapper`) manteve so
+   `paraDominio` (request -> Entity); a conversao Entity -> Response
+   (que antes vivia em `VeiculoMapper.paraResponse`, chamada de dentro
+   do UseCase) foi so movida para o Presenter, sem reescrever logica.
+   Isso e uma mudanca estrutural (onde a formatacao acontece), nao uma
+   mudanca de regra de negocio — a suite de testes inteira permanece
+   verde depois da migracao (ver secao Testes).
 2. **Domain model 100% livre de anotacao JPA.** `Veiculo` e
    `StatusVeiculo` (em `domain/model/veiculo`) sao objetos Java puros.
    `VeiculoEntity` (`adapter/out/veiculo/persistence/jpa/entity`) e a
@@ -139,11 +159,14 @@ repositorio para os comandos `curl` exatos e as respostas recebidas.
   `*Application`, `infrastructure/config/**`, `dto/**`,
   `persistence/jpa/{entity,mapper}/**`, `domain/exception/**`,
   `adapter/in/exception/**` (boilerplate sem logica de negocio).
-- **Ultima medicao:** 11 testes (8 unitarios + 3 integracao), 0
-  falhas, ~73% de cobertura de linha. `VeiculoController` e
-  `VendasServiceHttpAdapter` ficam sem teste direto aqui — sao
-  exercitados indiretamente pelo teste BDD do `servico-vendas-veiculos`
-  (que roda o fluxo completo entre os dois servicos).
+- **Ultima medicao:** 12 testes (9 unitarios + 3 integracao), 0
+  falhas, ~71% de cobertura de linha (`mvnw verify`, com Docker/
+  Testcontainers no ar). Inclui `VeiculoPresenterTest`, adicionado
+  junto com o `VeiculoPresenter` (ver decisao arquitetural 1a).
+  `VeiculoController` e `VendasServiceHttpAdapter` ficam sem teste
+  direto aqui — sao exercitados indiretamente pelo teste BDD do
+  `servico-vendas-veiculos` (que roda o fluxo completo entre os dois
+  servicos) e por teste manual (ver secao acima).
 
 ## O que ainda falta (proximas etapas)
 
