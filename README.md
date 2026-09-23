@@ -22,7 +22,9 @@ listagens e da venda propriamente dita.
 - Spring Boot 3.5.x (Web, Data JPA, Validation)
 - PostgreSQL
 - Lombok
-- Arquitetura em camadas inspirada em Clean Architecture (ver [CLAUDE.md](CLAUDE.md))
+- Arquitetura em camadas inspirada em Clean Architecture, com Presenter
+  dedicado (`adapter/in/presenter`) separando a formatacao da resposta
+  HTTP do UseCase (ver [CLAUDE.md](CLAUDE.md))
 
 ## Endpoints
 
@@ -97,10 +99,14 @@ apos rodar os testes — sem gate de minimo aqui (so o
 - **Unitarios** (`application/veiculo/usecase/*Test.java`):
   `CadastrarVeiculoUseCaseTest`, `EditarVeiculoUseCaseTest`,
   `AtualizarStatusVeiculoUseCaseTest` — Mockito, mockando os `port/out`.
+  Os UseCases devolvem a Entity de dominio `Veiculo` (nao mais o DTO de
+  resposta), entao as asserções verificam a Entity retornada.
+- **Presenter** (`adapter/in/presenter/veiculo/VeiculoPresenterTest.java`):
+  cobre a conversao `Veiculo` -> `VeiculoResponse`, isolada do UseCase.
 - **Integracao** (`adapter/out/veiculo/persistence/jpa/repository/VeiculoRepositoryAdapterIT.java`):
   `@DataJpaTest` contra Postgres real (Testcontainers, nao H2).
 
-**Ultima medicao:** 11 testes, 0 falhas, cobertura de linha ~73%
+**Ultima medicao:** 12 testes, 0 falhas, cobertura de linha ~71%
 (controller e o client HTTP nao tem teste dedicado aqui — cobertos
 indiretamente no teste BDD do `servico-vendas-veiculos`, que exercita o
 fluxo completo entre os dois servicos).
