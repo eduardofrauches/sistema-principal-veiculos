@@ -24,7 +24,7 @@ listagens e da venda propriamente dita.
 - Lombok
 - Arquitetura em camadas inspirada em Clean Architecture, com Presenter
   dedicado (`adapter/in/presenter`) separando a formatacao da resposta
-  HTTP do UseCase (ver [CLAUDE.md](CLAUDE.md))
+  HTTP do UseCase (ver [ARCHITECTURE.md](ARCHITECTURE.md))
 
 ## Endpoints
 
@@ -91,7 +91,7 @@ kubectl apply -k k8s/overlays/local
 Fluxo ponta a ponta validado com `curl` junto com o
 `servico-vendas-veiculos` (cadastro -> sincronizacao -> venda -> webhook
 de pagamento -> status final refletido de volta aqui). Ver
-[CLAUDE.md](CLAUDE.md) para os detalhes e o resumo de entrega do
+[ARCHITECTURE.md](ARCHITECTURE.md) para os detalhes e o resumo de entrega do
 repositorio para os comandos usados.
 
 ## Testes

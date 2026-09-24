@@ -1,9 +1,7 @@
-# CLAUDE.md — sistema-principal-veiculos
+# Decisões de Arquitetura — sistema-principal-veiculos
 
-Contexto para o Claude Code manter coerencia entre sessoes futuras
-neste repositorio. Ver tambem o documento de arquitetura original em
-`arquitetura-revenda-veiculos.md` (na maquina do usuario, fora deste
-repo) para a visao completa dos dois servicos.
+Registro das decisões arquiteturais deste serviço, mantido ao longo
+do desenvolvimento para referência futura.
 
 ## O que este servico e
 
@@ -103,7 +101,7 @@ src/main/java/com/revendaveiculos/sistemaprincipal/
    — sem o passo intermediario de reserva, a maquina de estados daqui
    rejeitaria o salto direto `DISPONIVEL -> VENDIDO` com 409. Isso foi
    um bug real encontrado no teste manual ponta a ponta e corrigido no
-   `EfetuarVendaUseCase` do outro servico (ver CLAUDE.md dele).
+   `EfetuarVendaUseCase` do outro servico (ver ARCHITECTURE.md dele).
 6. **`VendasServiceHttpAdapter`** (implementa `VendasServicePort`) usa
    `RestTemplate` (bean configurado em
    `infrastructure/config/veiculo/RestTemplateConfig`) e a URL vem de
@@ -155,7 +153,7 @@ repositorio para os comandos `curl` exatos e as respostas recebidas.
 - **JaCoCo** (`jacoco-maven-plugin`) mede cobertura em todo `mvnw test`
   (relatorio em `target/site/jacoco/index.html`). **Sem gate de minimo
   aqui** — a exigencia de 80% do enunciado e so para o
-  `servico-vendas-veiculos` (ver CLAUDE.md dele). Exclusoes do calculo:
+  `servico-vendas-veiculos` (ver ARCHITECTURE.md dele). Exclusoes do calculo:
   `*Application`, `infrastructure/config/**`, `dto/**`,
   `persistence/jpa/{entity,mapper}/**`, `domain/exception/**`,
   `adapter/in/exception/**` (boilerplate sem logica de negocio).
