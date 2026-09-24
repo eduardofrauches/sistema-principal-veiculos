@@ -17,7 +17,7 @@ compartilham banco — toda comunicacao entre eles e HTTP.
 
 ```bash
 ./mvnw clean compile      # compilar
-docker compose up -d      # na raiz do repo: sobe o Postgres deste servico e o do outro
+docker compose up -d      # no repo irmao infra-databases-revenda-veiculos: sobe o Postgres deste servico e o do outro
 ./mvnw spring-boot:run    # rodar (porta 8081) — precisa do Postgres acima no ar
 ./mvnw test                # quando houver testes
 ```
@@ -124,10 +124,10 @@ src/main/java/com/revendaveiculos/sistemaprincipal/
    `revenda-postgres-core` (`veiculos_core_db`, porta `5432` do host) e
    define a porta HTTP do servico (`8081`) e a URL base do
    `servico-vendas-veiculos`. O `docker-compose.yml` que sobe esse
-   banco fica na **raiz do repositorio**
-   (`C:\Dev\revenda-veiculos\docker-compose.yml`), nao dentro deste
-   projeto — ele sobe os dois bancos (deste servico e do
-   `servico-vendas-veiculos`) de uma vez.
+   banco fica no repositorio irmao **`infra-databases-revenda-veiculos`**
+   (clonado como pasta irma deste), nao dentro deste projeto — ele sobe
+   os dois bancos (deste servico e do `servico-vendas-veiculos`) de uma
+   vez.
 
 ## Testado manualmente (fluxo ponta a ponta)
 
