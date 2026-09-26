@@ -194,4 +194,5 @@ manifests Kubernetes. Ainda faltam, para as proximas etapas:
 - [ ] Push da imagem Docker para um registry (Docker Hub/GHCR) — hoje o estagio `docker` do CI so builda localmente.
 - [ ] Overlay Kubernetes para nuvem (`k8s/overlays/aws` ou equivalente) — hoje so existe `overlays/local`.
 - [ ] Gerenciamento de segredos de verdade (Sealed Secrets, Vault, External Secrets) no lugar do `Secret` placeholder.
+- [x] Tratamento de erros HTTP validado manualmente (JSON malformado, metodo nao suportado, CPF invalido, recurso nao encontrado, conflito de estado) — ver secao "Testando manualmente" acima.
 - [ ] Resiliencia mais robusta na chamada HTTP ao servico-vendas (retry/circuit breaker) — hoje uma falha so gera um log de warning.
