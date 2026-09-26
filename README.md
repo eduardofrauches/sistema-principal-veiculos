@@ -94,8 +94,68 @@ kubectl apply -k k8s/overlays/local
 Fluxo ponta a ponta validado com `curl` junto com o
 `servico-vendas-veiculos` (cadastro -> sincronizacao -> venda -> webhook
 de pagamento -> status final refletido de volta aqui). Ver
-[ARCHITECTURE.md](ARCHITECTURE.md) para os detalhes e o resumo de entrega do
-repositorio para os comandos usados.
+[ARCHITECTURE.md](ARCHITECTURE.md) para os detalhes arquiteturais.
+
+## Testando manualmente (exemplos de requisicao)
+
+Exemplos prontos para os 3 endpoints deste servico (porta `8081`).
+
+> **Atencao (Windows/PowerShell):** o `curl` do PowerShell e um apelido
+> (alias) para `Invoke-WebRequest` e nao aceita a sintaxe `-H`/`-d` do
+> curl tradicional. Chamar `curl.exe` diretamente tambem pode falhar,
+> porque o parsing de linha de comando do Windows reinterpreta as aspas
+> do JSON antes de repassar ao programa — o servidor acaba recebendo um
+> JSON corrompido e devolve `400`/`500`. **No PowerShell, use sempre
+> `Invoke-RestMethod`**, como nos exemplos abaixo. Em Linux/Mac/Git Bash,
+> os exemplos com `curl` funcionam normalmente.
+
+### Cadastrar veiculo (`POST /veiculos`)
+
+```bash
+curl -X POST http://localhost:8081/veiculos \
+  -H "Content-Type: application/json" \
+  -d '{"marca":"Fiat","modelo":"Uno","ano":2020,"cor":"Branco","preco":35000.00,"placa":"ABC1D23"}'
+```
+
+```powershell
+Invoke-RestMethod -Method Post -Uri "http://localhost:8081/veiculos" -ContentType "application/json" -Body '{"marca":"Fiat","modelo":"Uno","ano":2020,"cor":"Branco","preco":35000.00,"placa":"ABC1D23"}'
+```
+
+### Editar veiculo (`PUT /veiculos/{id}`)
+
+```bash
+curl -X PUT http://localhost:8081/veiculos/1 \
+  -H "Content-Type: application/json" \
+  -d '{"marca":"Fiat","modelo":"Uno","ano":2020,"cor":"Prata","preco":34000.00,"placa":"ABC1D23"}'
+```
+
+```powershell
+Invoke-RestMethod -Method Put -Uri "http://localhost:8081/veiculos/1" -ContentType "application/json" -Body '{"marca":"Fiat","modelo":"Uno","ano":2020,"cor":"Prata","preco":34000.00,"placa":"ABC1D23"}'
+```
+
+### Atualizar status (`PATCH /veiculos/{id}/status`) — uso interno, chamado pelo servico-vendas-veiculos
+
+```bash
+curl -X PATCH http://localhost:8081/veiculos/1/status \
+  -H "Content-Type: application/json" \
+  -d '{"status":"RESERVADO"}'
+```
+
+```powershell
+Invoke-RestMethod -Method Patch -Uri "http://localhost:8081/veiculos/1/status" -ContentType "application/json" -Body '{"status":"RESERVADO"}'
+```
+
+*(valores possiveis de `status`: `DISPONIVEL`, `RESERVADO`, `VENDIDO`)*
+
+### Respostas de erro possiveis
+
+| Situacao | Status |
+|---|---|
+| Campo obrigatorio faltando ou invalido (ex: `preco` <= 0) | `400` |
+| Corpo da requisicao ausente ou JSON mal formado | `400` |
+| Veiculo nao encontrado | `404` |
+| Editar veiculo ja vendido / transicao de status invalida | `409` |
+| Metodo HTTP nao suportado nessa rota | `405` |
 
 ## Testes
 
