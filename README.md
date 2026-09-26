@@ -39,30 +39,33 @@ Erros seguem um formato padrao (`ErrorResponse`): `400` para validacao
 encontrado, `409` para conflito de estado (ex.: editar veiculo ja
 vendido, transicao de status invalida).
 
-## Como rodar
+## Instruções de Execução
 
-1. Suba os bancos. O `docker-compose.yml` fica no repositorio
-   [infra-databases-revenda-veiculos](https://github.com/eduardofrauches/infra-databases-revenda-veiculos):
-   clone-o como **pasta irma** (mesmo nivel) deste repositorio, entre nela
-   e rode o compose (requer Docker rodando):
-   ```bash
-   # a partir da pasta pai onde este repositorio foi clonado
-   git clone https://github.com/eduardofrauches/infra-databases-revenda-veiculos.git
-   cd infra-databases-revenda-veiculos
-   docker compose up -d
-   cd ../sistema-principal-veiculos
-   ```
-   Isso sobe os dois Postgres (`5432` para este servico, `5433` para o
-   `servico-vendas-veiculos`), com as credenciais que o `application.yml` ja espera.
-2. Rode a aplicacao (requer JDK 17+; o Maven Wrapper baixa o Maven sozinho):
-   ```bash
-   ./mvnw spring-boot:run
-   ```
+### Pré-requisitos
+- JDK 17 ou superior (o Maven Wrapper baixa o Maven sozinho)
+- Docker rodando
+- Infraestrutura de banco já no ar (ver repositório
+  [infra-databases-revenda-veiculos](https://github.com/eduardofrauches/infra-databases-revenda-veiculos), passo anterior)
 
-A aplicacao sobe na porta `8081` e conecta no PostgreSQL do container
-`revenda-postgres-core` (`localhost:5432/veiculos_core_db`, ver
-`application.yml`). O schema e criado automaticamente
-(`ddl-auto: update`) — ainda nao ha migrations (Flyway/Liquibase).
+### 1. Clonar o repositório
+```bash
+git clone https://github.com/eduardofrauches/sistema-principal-veiculos.git
+cd sistema-principal-veiculos
+```
+
+### 2. Subir os bancos (se ainda não tiver feito)
+Clone [infra-databases-revenda-veiculos](https://github.com/eduardofrauches/infra-databases-revenda-veiculos) como pasta irmã
+(mesmo nível) deste repositório e siga o README de lá.
+
+### 3. Rodar a aplicação
+```bash
+./mvnw spring-boot:run
+```
+
+A aplicação sobe na porta `8081` e conecta no PostgreSQL do
+container `revenda-postgres-core`
+(`localhost:5432/veiculos_core_db`, ver `application.yml`). O schema
+é criado automaticamente (`ddl-auto: update`).
 
 ## Kubernetes
 
