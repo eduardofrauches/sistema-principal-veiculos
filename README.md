@@ -96,6 +96,8 @@ Fluxo ponta a ponta validado com `curl` junto com o
 de pagamento -> status final refletido de volta aqui). Ver
 [ARCHITECTURE.md](ARCHITECTURE.md) para os detalhes arquiteturais.
 
+Ultima validacao manual completa (fluxo + cenarios de erro): 26/09/2026.
+
 ## Testando manualmente (exemplos de requisicao)
 
 Exemplos prontos para os 3 endpoints deste servico (porta `8081`).
