@@ -185,6 +185,7 @@ Invoke-RestMethod -Method Patch -Uri "http://localhost:8081/veiculos/1/status" -
 | Corpo da requisicao ausente ou JSON mal formado | `400` |
 | Veiculo nao encontrado | `404` |
 | Editar veiculo ja vendido / transicao de status invalida | `409` |
+| Placa ja cadastrada em outro veiculo (cadastro ou edicao) | `409` |
 | Metodo HTTP nao suportado nessa rota | `405` |
 
 ## Testes
