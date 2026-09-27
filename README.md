@@ -69,6 +69,14 @@ container `revenda-postgres-core`
 (`localhost:5432/veiculos_core_db`, ver `application.yml`). O schema
 é criado automaticamente (`ddl-auto: update`).
 
+**Fluxo completo:** suba os bancos e **os dois serviços antes de cadastrar
+veículos** — suba também o
+[servico-vendas-veiculos](https://github.com/eduardofrauches/servico-vendas-veiculos)
+(porta `8082`). O cadastro é sincronizado com ele no momento em que acontece:
+um veículo cadastrado com o serviço de vendas fora do ar não aparece nas
+listagens de lá. Para sincronizar de novo, basta editar o veículo
+(`PUT /veiculos/{id}`).
+
 ## Kubernetes
 
 Manifests Kustomize em `k8s/` (`base/` + `overlays/local/`, para uso
@@ -102,7 +110,7 @@ kubectl port-forward svc/sistema-principal-veiculos 8081:8081
 
 - Para o fluxo completo, repita os passos 2 e 3 no
   [servico-vendas-veiculos](https://github.com/eduardofrauches/servico-vendas-veiculos)
-  (porta `8082`).
+  (porta `8082`) **antes de cadastrar veiculos**.
 - Se este servico ja estiver rodando localmente com `./mvnw spring-boot:run`,
   pare-o antes do `port-forward` (mesma porta `8081`).
 - Para atualizar a imagem depois de mudar o codigo: rode de novo o
