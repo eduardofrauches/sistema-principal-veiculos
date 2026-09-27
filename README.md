@@ -200,7 +200,7 @@ Invoke-RestMethod -Method Patch -Uri "http://localhost:8081/veiculos/1/status" -
 ./mvnw test
 ```
 
-Requer Docker rodando (o teste de integracao sobe um Postgres real via
+Requer Docker rodando (os testes de integracao sobem um Postgres real via
 Testcontainers). Cobertura via JaCoCo em `target/site/jacoco/index.html`
 apos rodar os testes — sem gate de minimo aqui (so o
 `servico-vendas-veiculos` tem essa exigencia no enunciado).
@@ -214,11 +214,15 @@ apos rodar os testes — sem gate de minimo aqui (so o
   cobre a conversao `Veiculo` -> `VeiculoResponse`, isolada do UseCase.
 - **Integracao** (`adapter/out/veiculo/persistence/jpa/repository/VeiculoRepositoryAdapterIT.java`):
   `@DataJpaTest` contra Postgres real (Testcontainers, nao H2).
+- **API** (`adapter/in/controller/veiculo/VeiculoControllerIT.java`):
+  MockMvc contra a aplicacao real (Spring context + Postgres real via
+  Testcontainers), com a sincronizacao com o servico de vendas simulada
+  (`@MockitoBean`); cobre a placa duplicada respondendo `409` no cadastro e
+  na edicao.
 
-**Ultima medicao:** 12 testes, 0 falhas, cobertura de linha ~71%
-(controller e o client HTTP nao tem teste dedicado aqui — cobertos
-indiretamente no teste BDD do `servico-vendas-veiculos`, que exercita o
-fluxo completo entre os dois servicos).
+**Ultima medicao:** 14 testes, 0 falhas, cobertura de linha ~76% (o client
+HTTP para o servico de vendas, `VendasServiceHttpAdapter`, nao tem teste
+dedicado aqui).
 
 ## CI/CD
 
@@ -241,7 +245,7 @@ Este projeto ja sobe de verdade, tem o fluxo principal funcionando,
 testes unitarios + de integracao, Dockerfile, pipeline de CI/CD e
 manifests Kubernetes. Ainda faltam, para as proximas etapas:
 
-- [ ] Teste BDD (Cucumber) tambem aqui, ou MockMvc para o `VeiculoController` (hoje sem cobertura direta).
+- [x] Teste de API com MockMvc para o `VeiculoController` (`VeiculoControllerIT`); o teste BDD (Cucumber) fica no `servico-vendas-veiculos`, que cobre o fluxo de venda.
 - [ ] Migrations versionadas (Flyway/Liquibase) em vez de `ddl-auto: update`.
 - [ ] Push da imagem Docker para um registry (Docker Hub/GHCR) — hoje o estagio `docker` do CI so builda localmente.
 - [ ] Overlay Kubernetes para nuvem (`k8s/overlays/aws` ou equivalente) — hoje so existe `overlays/local`.
