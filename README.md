@@ -1,5 +1,7 @@
 # sistema-principal-veiculos
 
+[![CI](https://github.com/eduardofrauches/sistema-principal-veiculos/actions/workflows/ci.yml/badge.svg?branch=main)](https://github.com/eduardofrauches/sistema-principal-veiculos/actions/workflows/ci.yml)
+
 Servico responsavel pelo cadastro e edicao de veiculos — a fonte de
 verdade (dados-mestre) da plataforma de revenda de veiculos. Faz parte
 de uma arquitetura de dois servicos independentes; o outro,
@@ -184,6 +186,21 @@ apos rodar os testes — sem gate de minimo aqui (so o
 (controller e o client HTTP nao tem teste dedicado aqui — cobertos
 indiretamente no teste BDD do `servico-vendas-veiculos`, que exercita o
 fluxo completo entre os dois servicos).
+
+## CI/CD
+
+Pipeline em [`.github/workflows/ci.yml`](.github/workflows/ci.yml)
+(GitHub Actions), com 4 estagios encadeados:
+
+1. `checks` — valida o projeto (`mvnw validate`).
+2. `build` — compila e empacota (`mvnw package`, sem rodar testes).
+3. `test_quality` — roda a suite completa (`mvnw verify`: unitarios +
+   integracao com Testcontainers) e publica o relatorio do JaCoCo.
+4. `docker` — builda a imagem a partir do `Dockerfile` da raiz.
+
+Mudancas entram na `main` via Pull Request: o CI roda no proprio PR
+(estagios 1 a 3) e roda de novo no merge na `main`, agora incluindo o
+estagio `docker`, que so executa em push na `main`.
 
 ## Em construcao
 
