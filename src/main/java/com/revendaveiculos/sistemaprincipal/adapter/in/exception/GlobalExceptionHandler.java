@@ -3,6 +3,7 @@ package com.revendaveiculos.sistemaprincipal.adapter.in.exception;
 import com.revendaveiculos.sistemaprincipal.domain.exception.PrecoInvalidoException;
 import com.revendaveiculos.sistemaprincipal.domain.exception.TransicaoStatusInvalidaException;
 import com.revendaveiculos.sistemaprincipal.domain.exception.VeiculoNaoEncontradoException;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.converter.HttpMessageNotReadableException;
@@ -46,6 +47,18 @@ public class GlobalExceptionHandler {
     public ResponseEntity<ErrorResponse> tratarConflitoDeEstado(TransicaoStatusInvalidaException ex) {
         return ResponseEntity.status(HttpStatus.CONFLICT)
                 .body(ErrorResponse.de(HttpStatus.CONFLICT.value(), "Conflito de estado", ex.getMessage()));
+    }
+
+    /**
+     * A placa e a unica coluna com restricao de unicidade (campos obrigatorios
+     * ja sao barrados antes, pela validacao), entao uma violacao de
+     * integridade aqui significa placa ja cadastrada em outro veiculo.
+     */
+    @ExceptionHandler(DataIntegrityViolationException.class)
+    public ResponseEntity<ErrorResponse> tratarViolacaoDeIntegridade(DataIntegrityViolationException ex) {
+        return ResponseEntity.status(HttpStatus.CONFLICT)
+                .body(ErrorResponse.de(HttpStatus.CONFLICT.value(), "Conflito de estado",
+                        "Ja existe um veiculo cadastrado com esta placa"));
     }
 
     @ExceptionHandler(HttpMessageNotReadableException.class)
