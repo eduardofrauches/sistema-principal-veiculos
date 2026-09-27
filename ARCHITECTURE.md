@@ -115,7 +115,12 @@ src/main/java/com/revendaveiculos/sistemaprincipal/
    `@Positive`, `@Min(1900)`. `GlobalExceptionHandler`
    (`adapter/in/exception`) traduz: `MethodArgumentNotValidException` e
    exceptions de dominio invalido -> `400`; `VeiculoNaoEncontradoException`
-   -> `404`; `TransicaoStatusInvalidaException` -> `409`.
+   -> `404`; `TransicaoStatusInvalidaException` -> `409`. **Adicionado em
+   26/09**, apos teste manual ponta a ponta ter revelado dois casos que
+   caiam no handler generico (`500`) em vez de um status especifico:
+   `HttpMessageNotReadableException` -> `400` (corpo da requisicao
+   ausente ou JSON mal formado) e `HttpRequestMethodNotSupportedException`
+   -> `405` (metodo HTTP nao suportado na rota).
 8. **Persistencia**: `ddl-auto: update` (sem Flyway/Liquibase ainda) —
    decisao pragmatica para esta etapa inicial, documentada como pendencia.
 9. **`application.yml`** aponta para o PostgreSQL do container
