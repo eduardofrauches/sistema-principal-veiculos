@@ -90,10 +90,11 @@ manifests desse repositorio antes de subir este servico no cluster**
 (falham a `readinessProbe`/`livenessProbe` em `/actuator/health`).
 
 ```bash
-# 0. Cluster local (requer Minikube e kubectl instalados)
+# 0. Cluster local (so na primeira vez; requer Minikube e kubectl)
 minikube start
 
-# 1. Bancos (a partir do repositorio infra-databases-revenda-veiculos)
+# 1. Bancos (so na primeira vez), a partir do repositorio
+#    infra-databases-revenda-veiculos
 kubectl apply -k .
 kubectl rollout status statefulset/postgres-core --timeout=300s
 
@@ -108,6 +109,11 @@ kubectl rollout status deployment/sistema-principal-veiculos --timeout=300s
 kubectl port-forward svc/sistema-principal-veiculos 8081:8081
 ```
 
+- Os passos 0 e 1 so precisam ser feitos uma vez: se voce ja seguiu o
+  README do outro servico, comece pelo passo 2. Rodar `minikube start` de
+  novo com o cluster no ar derruba os `port-forward` abertos (o terminal
+  mostra `lost connection to pod`); se acontecer, basta rodar o
+  `port-forward` de novo.
 - Para o fluxo completo, repita os passos 2 e 3 no
   [servico-vendas-veiculos](https://github.com/eduardofrauches/servico-vendas-veiculos)
   (porta `8082`) **antes de cadastrar veiculos**.
